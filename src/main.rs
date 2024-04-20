@@ -1,8 +1,8 @@
-mod install;
 mod config;
+mod install;
+use crate::install::get_config_or_install;
 use clap::Parser;
 use std::env;
-use crate::install::{is_installed, install};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -21,12 +21,11 @@ fn main() {
     while let Some(item) = iter.next() {
         println!("{}", item);
     }
-    if !is_installed() {
-        let result = install();
-        match result {
-            Ok(val) => println!("Hello World {}", val.to_string()),
-            Err(e) => println!("Error: {}", e.to_string())
+    let cfg_res = get_config_or_install();
+    match cfg_res {
+        Ok(config) => {
+            println!("{:?}", config);
         }
+        Err(e) => println!("Error: {}", e.to_string()),
     }
-    //println!("Hello {}!", args.name.unwrap_or("Option is none".to_string()))
 }
