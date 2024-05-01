@@ -12,7 +12,7 @@ const DEFAULT_TAG_SYMBOLS: &str = "@#";
 
 #[derive(Debug, Clone)]
 pub struct JournalConfig {
-    path: String,
+    pub path: String,
 }
 
 #[derive(Debug, Deserialize)]

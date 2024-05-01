@@ -7,14 +7,14 @@ pub enum ModeKind {
 
 #[derive(Debug)]
 pub struct Mode {
-    kind: ModeKind,
-    journal: JournalConfig
+    pub kind: ModeKind,
+    pub journal_config: JournalConfig
 }
 
 pub fn get_mode(args: &Vec<String>, config: &mut Config) -> Mode {
     let mode = Mode {
         kind: ModeKind::Append,
-        journal: get_cur_journal_config(&args, config)
+        journal_config: get_cur_journal_config(&args, config)
     };
     return mode;
 }
