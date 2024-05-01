@@ -16,7 +16,7 @@ struct Entry {
 }
 
 #[derive(Debug)]
-struct Journal {
+pub struct Journal {
     config: JournalConfig,
     name: String,
     entries: Vec<Entry>

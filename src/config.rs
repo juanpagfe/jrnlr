@@ -5,13 +5,12 @@ use std::env;
 use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::io::Read;
-use std::io::{Error, ErrorKind};
 use std::path::{Path, PathBuf};
 
 pub const CONFIG_FILENAME: &str = "config.toml";
 const DEFAULT_TAG_SYMBOLS: &str = "@#";
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct JournalConfig {
     path: String,
 }
@@ -69,6 +68,11 @@ impl Serialize for JournalConfig {
         state.serialize_field("path", &self.path)?;
         state.end()
     }
+}
+
+pub fn get_cur_journal_config(args: &Vec<String>, config: &mut Config) -> JournalConfig {
+    // For now, it returns the default
+    return config.journals.get("default").unwrap().clone();
 }
 
 fn get_app_name() -> String {

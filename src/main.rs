@@ -1,7 +1,9 @@
 mod config;
 mod install;
 mod journal;
+mod mode;
 use crate::install::get_config_or_install;
+use crate::mode::get_mode;
 use clap::Parser;
 use std::env;
 
@@ -17,16 +19,8 @@ struct Args {
 
 fn main() {
     //let args = Args::parse();
-    let argl: Vec<String> = env::args().collect();
-    let mut iter = argl.iter().skip(1);
-    while let Some(item) = iter.next() {
-        println!("{}", item);
-    }
-    let cfg_res = get_config_or_install();
-    match cfg_res {
-        Ok(config) => {
-            println!("{:?}", config);
-        }
-        Err(e) => println!("Error: {}", e.to_string()),
-    }
+    let arg_list: Vec<String> = env::args().collect();
+    let mut config = get_config_or_install().unwrap();
+    let mode = get_mode(&arg_list, &mut config);
+    println!("{:?}", mode);
 }
