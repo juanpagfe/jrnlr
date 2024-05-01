@@ -71,49 +71,35 @@ impl Serialize for JournalConfig {
     }
 }
 
-fn get_app_name() -> Option<String> {
-    if let Some(app_path) = env::args().next() {
-        if let Some(app_name) = Path::new(&app_path).file_name() {
-            if let Some(app_name_str) = app_name.to_str() {
-                return Some(app_name_str.to_string());
-            }
-        }
-    }
-    None
+fn get_app_name() -> String {
+    let app_path = env::args().next().unwrap();
+    let app_name = Path::new(&app_path).file_name();
+    return app_name.unwrap().to_str().unwrap().to_string();
 }
 
-pub fn get_config_dir() -> Option<PathBuf> {
-    if let Some(config_dir) = dirs::config_dir() {
-        if let Some(app_name) = get_app_name() {
-            return Some(config_dir.join(app_name));
-        }
-    }
-    None
+pub fn get_config_dir() -> PathBuf {
+    let config_dir = dirs::config_dir().unwrap();
+    return config_dir.join(get_app_name());
 }
 
 pub fn get_config() -> std::io::Result<Config> {
-    if let Some(config_dir) = get_config_dir() {
-        if !config_dir.exists() || !config_dir.join(CONFIG_FILENAME).exists() {
-            let config = create_default_config(config_dir);
-            match config {
-                Ok(cfg) => return Ok(cfg),
-                Err(e) => return Err(e),
-            }
-        } else {
-            let mut file =
-                File::open(config_dir.join(CONFIG_FILENAME)).expect("Failed to open config file");
-            let mut toml_str = String::new();
-            file.read_to_string(&mut toml_str)
-                .expect("Failed to read config file");
-            let config: Config = toml::de::from_str(&toml_str).expect("Failed to deserialize TOML");
-
-            return Ok(config);
+    let config_dir = get_config_dir();
+    if !config_dir.exists() || !config_dir.join(CONFIG_FILENAME).exists() {
+        let config = create_default_config(config_dir);
+        match config {
+            Ok(cfg) => return Ok(cfg),
+            Err(e) => return Err(e),
         }
+    } else {
+        let mut file =
+            File::open(config_dir.join(CONFIG_FILENAME)).expect("Failed to open config file");
+        let mut toml_str = String::new();
+        file.read_to_string(&mut toml_str)
+            .expect("Failed to read config file");
+        let config: Config = toml::de::from_str(&toml_str).expect("Failed to deserialize TOML");
+
+        return Ok(config);
     }
-    Err(Error::new(
-        ErrorKind::NotFound,
-        "Config directory not found",
-    ))
 }
 
 pub fn create_default_config(config_dir: PathBuf) -> std::io::Result<Config> {

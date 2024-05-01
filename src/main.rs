@@ -1,5 +1,6 @@
 mod config;
 mod install;
+mod journal;
 use crate::install::get_config_or_install;
 use clap::Parser;
 use std::env;
